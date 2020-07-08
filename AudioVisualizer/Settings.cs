@@ -6,14 +6,13 @@ namespace AudioVisualizer
 {
     class Settings
     {
-        private float _xScale = 1.0f;
-        public float XScale { get => _xScale; set => _xScale = value; }
-        private float _yScale = 0.75f;
-        public float YScale { get => _yScale; set => _yScale = value; }
-        private int _sampleCount = 8192;
+        public float XScale { get; set; }
+        public float YScale { get; set; }
+        public int Smoothing { get; set; }
+        private int _sampleCount;
         public int SampleCount 
-        { 
-            get => _sampleCount; 
+        {
+            get { return _sampleCount; } 
 
             set 
             {
@@ -28,11 +27,12 @@ namespace AudioVisualizer
             } 
         }
 
-        public Settings (float x, float y, int samples)
+        public Settings (float x, float y, int samples, int smoothing)
         {
             XScale = x;
             YScale = y;
             SampleCount = samples;
+            Smoothing = smoothing;
         }
     }
 }

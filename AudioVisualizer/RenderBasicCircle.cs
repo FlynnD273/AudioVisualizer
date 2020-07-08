@@ -20,8 +20,11 @@ namespace AudioVisualizer
             for (int i = 0; i < heights.Length; i++)
             {
                 double angle = (double)i / heights.Length * Math.PI * 2 * Settings.XScale;
-                double x = Math.Cos(angle - Math.PI / 2) * (heights[i] * Settings.YScale + 100) + DrawingPictureBox.Width / 2;
-                double y = Math.Sin(angle - Math.PI / 2) * (heights[i] * Settings.YScale + 100) + DrawingPictureBox.Height / 2;
+
+                float height = Smooth(heights, i, Settings.Smoothing);
+
+                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) + DrawingPictureBox.Width / 2;
+                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) + DrawingPictureBox.Height / 2;
                 points.Add(new PointF((float)x, (float)y));
 
                 if (angle > Math.PI * 2)

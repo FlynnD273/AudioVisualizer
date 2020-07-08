@@ -16,13 +16,18 @@ namespace AudioVisualizer
             float[] heights = FFT.SampleToFreq(samples, Settings.SampleCount);
 
             List<PointF> points = new List<PointF>();
+            List<PointF> pointsReflected = new List<PointF>();
 
             points.Add(new PointF(0, DrawingPictureBox.Height / 2));
-            int i;
+            pointsReflected.Add(new PointF(0, DrawingPictureBox.Height / 2));
 
-            for (i = 0; i < heights.Length; i++)
+            for (int i = 0; i < heights.Length; i++)
             {
-                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Height / 2 - heights[i] * Settings.YScale)));
+                float height = Smooth(heights, i, Settings.Smoothing);
+
+                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Height / 2 - height * Settings.YScale)));
+                pointsReflected.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Height / 2 + height * Settings.YScale)));
+
 
                 if (i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale > DrawingPictureBox.Width)
                 {
@@ -31,6 +36,9 @@ namespace AudioVisualizer
             }
 
             points.Add(new PointF(DrawingPictureBox.Width, DrawingPictureBox.Height / 2));
+            pointsReflected.Add(new PointF(DrawingPictureBox.Width, DrawingPictureBox.Height / 2));
+
+            //Draw top
 
             LinearGradientBrush b = new LinearGradientBrush(new Point(0, 0), new Point(DrawingPictureBox.Width, 0), Color.BlueViolet, Color.OrangeRed);
 
@@ -40,23 +48,15 @@ namespace AudioVisualizer
 
             g.FillPolygon(b, points.ToArray());
 
-            points = new List<PointF>();
-            points.Add(new PointF(DrawingPictureBox.Width, DrawingPictureBox.Height / 2));
-
-            for (i--; i > 0; i--)
-            {
-                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Height / 2 + heights[i] * Settings.YScale)));
-            }
-
-            points.Add(new PointF(0, DrawingPictureBox.Height / 2));
+            //Draw bottom
 
             b = new LinearGradientBrush(new Point(0, 0), new Point(DrawingPictureBox.Width, 0), Color.BlueViolet, Color.OrangeRed);
 
-            g.FillPolygon(b, points.ToArray());
+            g.FillPolygon(b, pointsReflected.ToArray());
 
             b = new LinearGradientBrush(new PointF(0, DrawingPictureBox.Height / 2 - 1), new PointF(0, DrawingPictureBox.Height), Color.FromArgb(0, Color.Black), Color.Black);
 
-            g.FillPolygon(b, points.ToArray());
+            g.FillPolygon(b, pointsReflected.ToArray());
         }
     }
 }

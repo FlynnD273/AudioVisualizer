@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -22,5 +23,27 @@ namespace AudioVisualizer
         }
 
         public abstract void Render(Graphics g, float[] samples);
+
+        protected float Smooth(float[] heights, int index, int step)
+        {
+            int sampleCount = Math.Min(heights.Length - index, step);
+            if (sampleCount < 3)
+            {
+                return heights[index];
+            }
+
+            double[] k = Window.BartlettHann(sampleCount);
+            float result = 0;
+            float total = 0;
+            for (int i = 0; i < sampleCount; i++)
+            {
+                result += (float)(heights[i + index] * k[i]);
+                total += (float)k[i];
+            }
+
+            result /= step / 2;
+
+            return result;
+        }
     }
 }

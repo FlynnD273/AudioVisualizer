@@ -36,10 +36,12 @@
             this.xScaleNumberBox = new System.Windows.Forms.NumericUpDown();
             this.yScaleNumberBox = new System.Windows.Forms.NumericUpDown();
             this.sampleCountNumberBox = new System.Windows.Forms.NumericUpDown();
+            this.smoothingNumberBox = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.wavePictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleCountNumberBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.smoothingNumberBox)).BeginInit();
             this.SuspendLayout();
             // 
             // Start
@@ -71,7 +73,7 @@
             this.wavePictureBox.BackColor = System.Drawing.SystemColors.MenuText;
             this.wavePictureBox.Location = new System.Drawing.Point(0, 70);
             this.wavePictureBox.Name = "wavePictureBox";
-            this.wavePictureBox.Size = new System.Drawing.Size(1190, 380);
+            this.wavePictureBox.Size = new System.Drawing.Size(1382, 380);
             this.wavePictureBox.TabIndex = 2;
             this.wavePictureBox.TabStop = false;
             // 
@@ -124,11 +126,20 @@
             this.sampleCountNumberBox.TabIndex = 7;
             this.sampleCountNumberBox.ValueChanged += new System.EventHandler(this.sampleCountNumberBox_ValueChanged);
             // 
+            // smoothingNumberBox
+            // 
+            this.smoothingNumberBox.Location = new System.Drawing.Point(1136, 21);
+            this.smoothingNumberBox.Name = "smoothingNumberBox";
+            this.smoothingNumberBox.Size = new System.Drawing.Size(180, 31);
+            this.smoothingNumberBox.TabIndex = 6;
+            this.smoothingNumberBox.ValueChanged += new System.EventHandler(this.smoothingNumberBox_ValueChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1190, 450);
+            this.ClientSize = new System.Drawing.Size(1382, 450);
+            this.Controls.Add(this.smoothingNumberBox);
             this.Controls.Add(this.sampleCountNumberBox);
             this.Controls.Add(this.yScaleNumberBox);
             this.Controls.Add(this.xScaleNumberBox);
@@ -143,6 +154,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleCountNumberBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.smoothingNumberBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -157,6 +169,7 @@
         private System.Windows.Forms.NumericUpDown xScaleNumberBox;
         private System.Windows.Forms.NumericUpDown yScaleNumberBox;
         private System.Windows.Forms.NumericUpDown sampleCountNumberBox;
+        private System.Windows.Forms.NumericUpDown smoothingNumberBox;
     }
 }
 

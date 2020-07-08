@@ -40,7 +40,8 @@ namespace AudioVisualizer
             xScaleNumberBox.KeyDown += numericUpDown_KeyDown;
             yScaleNumberBox.KeyDown += numericUpDown_KeyDown;
             sampleCountNumberBox.KeyDown += numericUpDown_KeyDown;
-            
+            smoothingNumberBox.KeyDown += numericUpDown_KeyDown;
+
             wavePictureBox.Paint += Wave_Paint;
 
             InitOptions();
@@ -59,19 +60,22 @@ namespace AudioVisualizer
             yScaleNumberBox.Increment = 10M;
             yScaleNumberBox.Maximum = 500M;
             sampleCountNumberBox.Maximum = 16;
+            smoothingNumberBox.Minimum = 1;
+            smoothingNumberBox.Maximum = 10000;
 
             UpdateSettings();
         }
 
         private void InitOptions()
         {
-            settingsOptions = new Settings[4];
-            settingsOptions[0] = new Settings(1.0f, 100f, 8192);
-            settingsOptions[1] = new Settings(5.0f, 100f, 8192);
-            settingsOptions[2] = new Settings(5.0f, 100f, 8192);
-            settingsOptions[3] = new Settings(1.0f, 100f, 8192);
+            int optionCount = 4;
+            settingsOptions = new Settings[optionCount];
+            settingsOptions[0] = new Settings(1.0f, 100f, 8192, 1);
+            settingsOptions[1] = new Settings(5.0f, 150f, 8192, 1);
+            settingsOptions[2] = new Settings(5.0f, 100f, 8192, 1);
+            settingsOptions[3] = new Settings(10.0f, 100f, 8192, 1);
 
-            renderOptions = new RenderBase[4];
+            renderOptions = new RenderBase[optionCount];
             renderOptions[0] = new RenderWaveform(settingsOptions[0], wavePictureBox, "Waveform");
             renderOptions[1] = new RenderBasicFreq(settingsOptions[1], wavePictureBox, "Frequency");
             renderOptions[2] = new RenderReflectedFreq(settingsOptions[2], wavePictureBox, "Frequency Reflected");
@@ -84,6 +88,7 @@ namespace AudioVisualizer
             xScaleNumberBox.Value = (decimal)activeSettings.XScale;
             yScaleNumberBox.Value = (decimal)activeSettings.YScale;
             sampleCountNumberBox.Value = (decimal)Math.Log2(activeSettings.SampleCount);
+            smoothingNumberBox.Value = (decimal)activeSettings.Smoothing;
         }
 
         private void InitAudio (bool isMicrophone)
@@ -106,10 +111,7 @@ namespace AudioVisualizer
             input.DataAvailable += AddData;
 
             // When the Capturer Stops
-            input.RecordingStopped += (s, a) =>
-            {
-                input.Dispose();
-            };
+            input.RecordingStopped += (s, a) => { input.Dispose(); };
         }
 
         private void AddData (object s, WaveInEventArgs a)
@@ -120,8 +122,6 @@ namespace AudioVisualizer
             float[] temp = new float[a.BytesRecorded / 4];
 
             provider.Read(temp, 0, temp.Length);
-
-            //samples = new float[settings.SampleCount];
 
             for (int i = 0; i < temp.Length / 2; i++)
             {
@@ -193,6 +193,10 @@ namespace AudioVisualizer
         private void yScaleNumberBox_ValueChanged(object sender, EventArgs e)
         {
             activeSettings.YScale = (float)yScaleNumberBox.Value;
+        }
+        private void smoothingNumberBox_ValueChanged(object sender, EventArgs e)
+        {
+            activeSettings.Smoothing = (int)smoothingNumberBox.Value;
         }
 
         private void sampleCountNumberBox_ValueChanged(object sender, EventArgs e)

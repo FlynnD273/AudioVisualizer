@@ -16,7 +16,9 @@ namespace AudioVisualizer
 
             for (int i = 0; i < heights.Length; i++)
             {
-                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Size.Height / 2 - heights[i] * Settings.YScale)));
+                float height = Smooth(heights, i, Settings.Smoothing);
+
+                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Size.Height / 2 - height * Settings.YScale)));
 
                 if (i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale > DrawingPictureBox.Width)
                 {

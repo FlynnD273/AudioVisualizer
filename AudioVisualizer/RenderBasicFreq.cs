@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -21,7 +22,8 @@ namespace AudioVisualizer
 
             for (int i = 0; i < heights.Length; i++)
             {
-                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Height - 20.0f - heights[i] * Settings.YScale)));
+                float height = Smooth(heights, i, Settings.Smoothing);
+                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Height - 20.0f - height * Settings.YScale)));
 
                 if (i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale > DrawingPictureBox.Width)
                 {
