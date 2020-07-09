@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,27 +26,33 @@ namespace AudioVisualizer
         ISampleProvider provider;
         IWaveIn input;
 
-        Settings[] settingsOptions;
+        List<Settings> settingsOptions;
         Settings activeSettings;
 
-        RenderBase[] renderOptions;
+        List<RenderBase> renderOptions;
         RenderBase activeRender;
 
         List<float> samples = new List<float>();
 
+        bool init;
         public Form1()
         {
+            init = true;
             InitializeComponent();
+
+            DoubleBuffered = true;
+            typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, wavePanel, new object[] { true });
 
             xScaleNumberBox.KeyDown += numericUpDown_KeyDown;
             yScaleNumberBox.KeyDown += numericUpDown_KeyDown;
-            sampleCountNumberBox.KeyDown += numericUpDown_KeyDown;
+            samplePowNumberBox.KeyDown += numericUpDown_KeyDown;
             smoothingNumberBox.KeyDown += numericUpDown_KeyDown;
 
-            wavePictureBox.Paint += Wave_Paint;
+            wavePanel.Paint += Wave_Paint;
 
             InitOptions();
             InitUI();
+            init = false;
         }
 
         private void InitUI()
@@ -59,36 +66,55 @@ namespace AudioVisualizer
             xScaleNumberBox.Minimum = 1M;
             yScaleNumberBox.Increment = 10M;
             yScaleNumberBox.Maximum = 500M;
-            sampleCountNumberBox.Maximum = 16;
+            samplePowNumberBox.Maximum = 16;
             smoothingNumberBox.Minimum = 1;
             smoothingNumberBox.Maximum = 10000;
 
+            init = false;
             UpdateSettings();
         }
 
         private void InitOptions()
         {
-            int optionCount = 4;
-            settingsOptions = new Settings[optionCount];
-            settingsOptions[0] = new Settings(1.0f, 100f, 8192, 1);
-            settingsOptions[1] = new Settings(5.0f, 150f, 8192, 1);
-            settingsOptions[2] = new Settings(5.0f, 100f, 8192, 1);
-            settingsOptions[3] = new Settings(10.0f, 100f, 8192, 1);
+            settingsOptions = new List<Settings>();
+            settingsOptions.Add(new Settings(1.0f, 100f, 13, 1));
+            settingsOptions.Add(new Settings(5.0f, 150f, 13, 1));
+            settingsOptions.Add(new Settings(5.0f, 100f, 13, 1));
+            settingsOptions.Add(new Settings(5.0f, 100f, 13, 1));
+            settingsOptions.Add(new Settings(8.0f, 70f, 13, 10));
+            settingsOptions.Add(new Settings(8.0f, 70f, 13, 10));
+            settingsOptions.Add(new Settings(8.0f, 70f, 13, 10));
+            settingsOptions.Add(new Settings(4.0f, 40f, 13, 10));
 
-            renderOptions = new RenderBase[optionCount];
-            renderOptions[0] = new RenderWaveform(settingsOptions[0], wavePictureBox, "Waveform");
-            renderOptions[1] = new RenderBasicFreq(settingsOptions[1], wavePictureBox, "Frequency");
-            renderOptions[2] = new RenderReflectedFreq(settingsOptions[2], wavePictureBox, "Frequency Reflected");
-            renderOptions[3] = new RenderBasicCircle(settingsOptions[3], wavePictureBox, "Circle");
+            renderOptions = new List<RenderBase>();
+            renderOptions.Add(new RenderWaveform(settingsOptions[renderOptions.Count], wavePanel, "Waveform"));
+            renderOptions.Add(new RenderBasicFreq(settingsOptions[renderOptions.Count], wavePanel, "Frequency"));
+            renderOptions.Add(new RenderReflectedFreq(settingsOptions[renderOptions.Count], wavePanel, "Reflections"));
+            renderOptions.Add(new RenderWaveFreq(settingsOptions[renderOptions.Count], wavePanel, "Frequency Wave"));
+            renderOptions.Add(new RenderOutlineCircle(settingsOptions[renderOptions.Count], wavePanel, "Circle Outline"));
+            renderOptions.Add(new RenderBasicCircle(settingsOptions[renderOptions.Count], wavePanel, "Shadow"));
+            renderOptions.Add(new RenderRainbowCircle(settingsOptions[renderOptions.Count], wavePanel, "Color Wheel"));
+            renderOptions.Add(new RenderReflectedCircle(settingsOptions[renderOptions.Count], wavePanel, "Mirrored Circle"));
+
+            activeSettings = settingsOptions[0];
+            activeRender = renderOptions[0];
         }
 
         private void UpdateSettings()
         {
-            activeSettings = settingsOptions[renderModeComboBox.SelectedIndex];
-            xScaleNumberBox.Value = (decimal)activeSettings.XScale;
-            yScaleNumberBox.Value = (decimal)activeSettings.YScale;
-            sampleCountNumberBox.Value = (decimal)Math.Log2(activeSettings.SampleCount);
-            smoothingNumberBox.Value = (decimal)activeSettings.Smoothing;
+            if (!init)
+            {
+                activeSettings = settingsOptions[renderModeComboBox.SelectedIndex];
+                activeRender = renderOptions[renderModeComboBox.SelectedIndex];
+                xScaleNumberBox.DataBindings.Clear();
+                xScaleNumberBox.DataBindings.Add("Value", activeSettings, "XScale", false, DataSourceUpdateMode.OnPropertyChanged);
+                yScaleNumberBox.DataBindings.Clear();
+                yScaleNumberBox.DataBindings.Add("Value", activeSettings, "YScale", false, DataSourceUpdateMode.OnPropertyChanged);
+                samplePowNumberBox.DataBindings.Clear();
+                samplePowNumberBox.DataBindings.Add("Value", activeSettings, "SamplePow", false, DataSourceUpdateMode.OnPropertyChanged);
+                smoothingNumberBox.DataBindings.Clear();
+                smoothingNumberBox.DataBindings.Add("Value", activeSettings, "Smoothing", false, DataSourceUpdateMode.OnPropertyChanged);
+            }
         }
 
         private void InitAudio (bool isMicrophone)
@@ -96,7 +122,7 @@ namespace AudioVisualizer
             if (isMicrophone)
             {
                 input = new WaveIn();
-                input.WaveFormat = new WaveFormat(44100, 2);
+                input.WaveFormat = new WaveFormat(44100, 32, 2);
             }
             else
             {
@@ -133,7 +159,7 @@ namespace AudioVisualizer
                 samples.RemoveAt(0);
             }
 
-            wavePictureBox.Invalidate();
+            wavePanel.Invalidate();
         }
 
         private void Stop_Click (object sender, EventArgs e)
@@ -167,6 +193,9 @@ namespace AudioVisualizer
         {
             if (input != null && samples != null && samples.Count > 100)
             {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.CompositingQuality = CompositingQuality.GammaCorrected;
+                e.Graphics.Clear(Color.Black);
                 activeRender.Render(e.Graphics, samples.ToArray());
             }
         }
@@ -181,27 +210,7 @@ namespace AudioVisualizer
 
         private void renderModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            activeRender = renderOptions[renderModeComboBox.SelectedIndex];
             UpdateSettings();
-        }
-
-        private void xScaleNumberBox_ValueChanged(object sender, EventArgs e)
-        {
-            activeSettings.XScale = (float)xScaleNumberBox.Value;
-        }
-
-        private void yScaleNumberBox_ValueChanged(object sender, EventArgs e)
-        {
-            activeSettings.YScale = (float)yScaleNumberBox.Value;
-        }
-        private void smoothingNumberBox_ValueChanged(object sender, EventArgs e)
-        {
-            activeSettings.Smoothing = (int)smoothingNumberBox.Value;
-        }
-
-        private void sampleCountNumberBox_ValueChanged(object sender, EventArgs e)
-        {
-            activeSettings.SampleCount = (int)Math.Pow(2, (int)sampleCountNumberBox.Value);
         }
 
         private void numericUpDown_KeyDown(object sender, KeyEventArgs e)

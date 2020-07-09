@@ -8,7 +8,7 @@ namespace AudioVisualizer
 {
     class RenderWaveform : RenderBase
     {
-        public RenderWaveform(Settings s, PictureBox c, string n) : base(s, c, n) { }
+        public RenderWaveform(Settings s, Panel c, string n) : base(s, c, n) { }
 
         public override void Render(Graphics g, float[] heights)
         {
@@ -18,9 +18,9 @@ namespace AudioVisualizer
             {
                 float height = Smooth(heights, i, Settings.Smoothing);
 
-                points.Add(new PointF(i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale, (float)(DrawingPictureBox.Size.Height / 2 - height * Settings.YScale)));
+                points.Add(new PointF(i / (float)heights.Length * DrawingPanel.Width * Settings.XScale, (float)(DrawingPanel.Size.Height / 2 - height * Settings.YScale)));
 
-                if (i / (float)heights.Length * DrawingPictureBox.Width * Settings.XScale > DrawingPictureBox.Width)
+                if (i / (float)heights.Length * DrawingPanel.Width * Settings.XScale > DrawingPanel.Width)
                 {
                     break;
                 }

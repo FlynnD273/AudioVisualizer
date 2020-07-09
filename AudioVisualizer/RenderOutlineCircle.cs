@@ -10,34 +10,26 @@ using ColorMine.ColorSpaces;
 
 namespace AudioVisualizer
 {
-    class RenderBasicCircle : RenderBase
+    class RenderOutlineCircle : RenderBase
     {
-        public RenderBasicCircle(Settings s, Panel c, string n) : base(s, c, n) { }
+        public RenderOutlineCircle(Settings s, Panel c, string n) : base(s, c, n) { }
 
         public override void Render(Graphics g, float[] samples)
         {
             float[] heights = FFT.SampleToFreq(samples, Settings.SampleCount);
             GetLastIndex(heights);
 
-            DrawOutline(g, heights, Color.BlueViolet);
             DrawCircle(g, heights);
-        }
-        
-        private void DrawOutline(Graphics g, float[] heights, Color inner)
-        {
-            List<PointF> points = GetCircularPoints(heights, 2.0f, 150f);
-            
-            PathGradientBrush b = new PathGradientBrush(points.ToArray());
-            b.CenterColor = inner;
-            b.SurroundColors = new Color[] { Color.FromArgb(0, Color.Black) };
-
-            g.FillPolygon(b, points.ToArray());
         }
 
         private void DrawCircle(Graphics g, float[] heights)
         {
             List<PointF> points = GetCircularPoints(heights, 1.0f);
-            g.FillPolygon(Brushes.Black, points.ToArray());
+            points.Add(points[0]);
+
+            Pen p = new Pen(Color.White, 2.0f);
+
+            g.DrawLines(p, points.ToArray());
         }
     }
 }

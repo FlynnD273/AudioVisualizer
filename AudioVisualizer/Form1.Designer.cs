@@ -30,17 +30,17 @@
         {
             this.Start = new System.Windows.Forms.Button();
             this.Stop = new System.Windows.Forms.Button();
-            this.wavePictureBox = new System.Windows.Forms.PictureBox();
+            this.wavePanel = new System.Windows.Forms.Panel();
             this.inputModeComboBox = new System.Windows.Forms.ComboBox();
             this.renderModeComboBox = new System.Windows.Forms.ComboBox();
             this.xScaleNumberBox = new System.Windows.Forms.NumericUpDown();
             this.yScaleNumberBox = new System.Windows.Forms.NumericUpDown();
-            this.sampleCountNumberBox = new System.Windows.Forms.NumericUpDown();
+            this.samplePowNumberBox = new System.Windows.Forms.NumericUpDown();
             this.smoothingNumberBox = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.wavePictureBox)).BeginInit();
+            this.wavePanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sampleCountNumberBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.smoothingNumberBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -67,15 +67,15 @@
             // 
             // wavePictureBox
             // 
-            this.wavePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.wavePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.wavePictureBox.BackColor = System.Drawing.SystemColors.MenuText;
-            this.wavePictureBox.Location = new System.Drawing.Point(0, 70);
-            this.wavePictureBox.Name = "wavePictureBox";
-            this.wavePictureBox.Size = new System.Drawing.Size(1382, 380);
-            this.wavePictureBox.TabIndex = 2;
-            this.wavePictureBox.TabStop = false;
+            this.wavePanel.BackColor = System.Drawing.SystemColors.MenuText;
+            this.wavePanel.Location = new System.Drawing.Point(0, 70);
+            this.wavePanel.Name = "wavePictureBox";
+            this.wavePanel.Size = new System.Drawing.Size(1382, 380);
+            this.wavePanel.TabIndex = 2;
+            this.wavePanel.TabStop = false;
             // 
             // inputModeComboBox
             // 
@@ -107,7 +107,7 @@
             this.xScaleNumberBox.Name = "xScaleNumberBox";
             this.xScaleNumberBox.Size = new System.Drawing.Size(180, 31);
             this.xScaleNumberBox.TabIndex = 6;
-            this.xScaleNumberBox.ValueChanged += new System.EventHandler(this.xScaleNumberBox_ValueChanged);
+            //this.xScaleNumberBox.ValueChanged += new System.EventHandler(this.xScaleNumberBox_ValueChanged);
             // 
             // yScaleNumberBox
             // 
@@ -116,15 +116,15 @@
             this.yScaleNumberBox.Name = "yScaleNumberBox";
             this.yScaleNumberBox.Size = new System.Drawing.Size(180, 31);
             this.yScaleNumberBox.TabIndex = 6;
-            this.yScaleNumberBox.ValueChanged += new System.EventHandler(this.yScaleNumberBox_ValueChanged);
+            //this.yScaleNumberBox.ValueChanged += new System.EventHandler(this.yScaleNumberBox_ValueChanged);
             // 
             // sampleCountNumberBox
             // 
-            this.sampleCountNumberBox.Location = new System.Drawing.Point(950, 21);
-            this.sampleCountNumberBox.Name = "sampleCountNumberBox";
-            this.sampleCountNumberBox.Size = new System.Drawing.Size(180, 31);
-            this.sampleCountNumberBox.TabIndex = 7;
-            this.sampleCountNumberBox.ValueChanged += new System.EventHandler(this.sampleCountNumberBox_ValueChanged);
+            this.samplePowNumberBox.Location = new System.Drawing.Point(950, 21);
+            this.samplePowNumberBox.Name = "sampleCountNumberBox";
+            this.samplePowNumberBox.Size = new System.Drawing.Size(180, 31);
+            this.samplePowNumberBox.TabIndex = 7;
+            //this.samplePowNumberBox.ValueChanged += new System.EventHandler(this.samplePowNumberBox_ValueChanged);
             // 
             // smoothingNumberBox
             // 
@@ -132,7 +132,7 @@
             this.smoothingNumberBox.Name = "smoothingNumberBox";
             this.smoothingNumberBox.Size = new System.Drawing.Size(180, 31);
             this.smoothingNumberBox.TabIndex = 6;
-            this.smoothingNumberBox.ValueChanged += new System.EventHandler(this.smoothingNumberBox_ValueChanged);
+            //this.smoothingNumberBox.ValueChanged += new System.EventHandler(this.smoothingNumberBox_ValueChanged);
             // 
             // Form1
             // 
@@ -140,20 +140,21 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1382, 450);
             this.Controls.Add(this.smoothingNumberBox);
-            this.Controls.Add(this.sampleCountNumberBox);
+            this.Controls.Add(this.samplePowNumberBox);
             this.Controls.Add(this.yScaleNumberBox);
             this.Controls.Add(this.xScaleNumberBox);
             this.Controls.Add(this.renderModeComboBox);
             this.Controls.Add(this.inputModeComboBox);
-            this.Controls.Add(this.wavePictureBox);
+            this.Controls.Add(this.wavePanel);
             this.Controls.Add(this.Stop);
             this.Controls.Add(this.Start);
+            this.Controls.Add(this.wavePanel);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.wavePictureBox)).EndInit();
+            //((System.ComponentModel.ISupportInitialize)(this.wavePanel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sampleCountNumberBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.smoothingNumberBox)).EndInit();
             this.ResumeLayout(false);
 
@@ -163,12 +164,12 @@
 
         private System.Windows.Forms.Button Start;
         private System.Windows.Forms.Button Stop;
-        private System.Windows.Forms.PictureBox wavePictureBox;
+        private System.Windows.Forms.Panel wavePanel;
         private System.Windows.Forms.ComboBox inputModeComboBox;
         private System.Windows.Forms.ComboBox renderModeComboBox;
         private System.Windows.Forms.NumericUpDown xScaleNumberBox;
         private System.Windows.Forms.NumericUpDown yScaleNumberBox;
-        private System.Windows.Forms.NumericUpDown sampleCountNumberBox;
+        private System.Windows.Forms.NumericUpDown samplePowNumberBox;
         private System.Windows.Forms.NumericUpDown smoothingNumberBox;
     }
 }
