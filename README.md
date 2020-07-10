@@ -1,4 +1,4 @@
 # AudioVisualizer
 A flexible audio visualizer for the speaker output or mic input
 
-There are three values you can change within each visualizer: the x scale, the y scale, and the sample count. The actual sample count is calculated by 2^(value you gave)
+Move your mouse to the upper lefft corner of the render window to show the settings button, where you can tweak all kinds of parameters.
