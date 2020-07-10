@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AudioVisualizer
 {
-    class ColorSetting
+    public class ColorSetting
     {
         public Color StoredColor { get; set; }
         public string Name { get; set; }

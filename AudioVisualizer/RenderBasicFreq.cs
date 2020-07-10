@@ -10,7 +10,7 @@ namespace AudioVisualizer
 {
     class RenderBasicFreq : RenderBase
     {
-        public RenderBasicFreq(Settings s, Panel c, string n) : base(s, c, n) { }
+        public RenderBasicFreq(Settings s, string n) : base(s, n) { }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -18,26 +18,26 @@ namespace AudioVisualizer
 
             List<PointF> points = new List<PointF>();
 
-            points.Add(new PointF(0, DrawingPanel.Height));
+            points.Add(new PointF(0,  g.VisibleClipBounds.Height));
 
             for (int i = 0; i < heights.Length; i++)
             {
                 float height = Smooth(heights, i, Settings.Smoothing);
-                points.Add(new PointF(i / (float)heights.Length * DrawingPanel.Width * Settings.XScale, (float)(DrawingPanel.Height - 20.0f - height * Settings.YScale)));
+                points.Add(new PointF(i / (float)heights.Length *  g.VisibleClipBounds.Width * Settings.XScale, (float)( g.VisibleClipBounds.Height - 20.0f - height * Settings.YScale)));
 
-                if (i / (float)heights.Length * DrawingPanel.Width * Settings.XScale > DrawingPanel.Width)
+                if (i / (float)heights.Length *  g.VisibleClipBounds.Width * Settings.XScale >  g.VisibleClipBounds.Width)
                 {
                     break;
                 }
             }
 
-            points.Add(new PointF(DrawingPanel.Width, DrawingPanel.Height));
+            points.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height));
 
-            LinearGradientBrush b = new LinearGradientBrush(new Point(0, 0), new Point(DrawingPanel.Width, 0), Color.BlueViolet, Color.OrangeRed);
+            LinearGradientBrush b = new LinearGradientBrush(new PointF(0, 0), new PointF( g.VisibleClipBounds.Width, 0), Color.BlueViolet, Color.OrangeRed);
 
             g.FillPolygon(b, points.ToArray());
 
-            b = new LinearGradientBrush(new Point(0, 0), new Point(0, DrawingPanel.Height), Color.ForestGreen, Color.FromArgb(0, Color.ForestGreen));
+            b = new LinearGradientBrush(new PointF(0, 0), new PointF(0,  g.VisibleClipBounds.Height), Color.ForestGreen, Color.FromArgb(0, Color.ForestGreen));
 
             g.FillPolygon(b, points.ToArray());
         }

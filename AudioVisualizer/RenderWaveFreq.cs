@@ -9,7 +9,7 @@ namespace AudioVisualizer
 {
     class RenderWaveFreq : RenderBase
     {
-        public RenderWaveFreq(Settings s, Panel c, string n) : base(s, c, n) { }
+        public RenderWaveFreq(Settings s, string n) : base(s, n) { }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -17,18 +17,18 @@ namespace AudioVisualizer
             GetLastIndex(heights);
             List<PointF> points = new List<PointF>();
 
-            points.Add(new PointF(0, DrawingPanel.Height / 2));
+            points.Add(new PointF(0,  g.VisibleClipBounds.Height / 2));
 
             for (int i = 0; i < lastIndex; i++)
             {
                 float height = Smooth(heights, i, Settings.Smoothing);
-                float x = i / (float)heights.Length * DrawingPanel.Width * Settings.XScale;
-                float y = (float)(DrawingPanel.Height / 2 - height * Settings.YScale * ((i % 2) * 2 - 1));
+                float x = i / (float)heights.Length *  g.VisibleClipBounds.Width * Settings.XScale;
+                float y = (float)( g.VisibleClipBounds.Height / 2 - height * Settings.YScale * ((i % 2) * 2 - 1));
 
                 points.Add(new PointF(x, y));
             }
 
-            points.Add(new PointF(DrawingPanel.Width, DrawingPanel.Height / 2));
+            points.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height / 2));
 
             Pen p = new Pen(Color.White, 2.0f);
 

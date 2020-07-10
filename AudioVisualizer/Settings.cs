@@ -7,84 +7,53 @@ using System.Text;
 
 namespace AudioVisualizer
 {
-    class Settings : INotifyPropertyChanged
+    class Settings : NotifyPropertyChangedBase
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
         private float _xScale;
         public float XScale
         {
             get => _xScale;
-            set
-            {
-                if (value != _xScale)
-                {
-                    _xScale = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => UpdateField(ref _xScale, value);
         }
 
         private float _yScale;
 
         public float YScale
         {
-            get { return _yScale; }
-            set
-            {
-                _yScale = value;
-                NotifyPropertyChanged();
-            }
+            get => _yScale;
+            set => UpdateField(ref _yScale, value);
         }
 
         private int _smoothing;
 
         public int Smoothing
         {
-            get { return _smoothing; }
-            set
-            {
-                _smoothing = value;
-                NotifyPropertyChanged();
-            }
+            get => _smoothing;
+            set => UpdateField(ref _smoothing, value);
         }
 
         private int _samplePow;
 
         public int SamplePow
         {
-            get { return _samplePow; }
-            set
-            {
-                _samplePow = value;
-                _sampleCount = (int)Math.Pow(2, _samplePow);
-                NotifyPropertyChanged();
-            }
+            get => _samplePow;
+            set => UpdateField(ref _samplePow, value, OnSamplePowChanged);
         }
 
-        private int _sampleCount;
-        public int SampleCount 
+        private void OnSamplePowChanged(int obj)
         {
-            get { return _sampleCount; } 
+            SampleCount = (int)Math.Pow(2, _samplePow);
+            OnPropertyChanged(nameof(SampleCount));
         }
+
+        public int SampleCount { get; private set; }
 
         private List<ColorSetting> _colors;
 
         public List<ColorSetting> Colors
         {
-            get { return _colors; }
-            set
-            {
-                _colors = value;
-                NotifyPropertyChanged();
-            }
+            get => _colors;
+            set => UpdateField(ref _colors, value);
         }
 
         public Settings (float x, float y, int samplePow, int smoothing)

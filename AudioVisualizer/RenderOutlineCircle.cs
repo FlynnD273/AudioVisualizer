@@ -12,7 +12,7 @@ namespace AudioVisualizer
 {
     class RenderOutlineCircle : RenderBase
     {
-        public RenderOutlineCircle(Settings s, Panel c, string n) : base(s, c, n) { }
+        public RenderOutlineCircle(Settings s, string n) : base(s, n) { }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -24,7 +24,7 @@ namespace AudioVisualizer
 
         private void DrawCircle(Graphics g, float[] heights)
         {
-            List<PointF> points = GetCircularPoints(heights, 1.0f);
+            List<PointF> points = GetCircularPoints(heights, 1.0f, g);
             points.Add(points[0]);
 
             Pen p = new Pen(Color.White, 2.0f);

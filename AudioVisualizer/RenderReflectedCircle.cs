@@ -9,14 +9,14 @@ namespace AudioVisualizer
 {
     class RenderReflectedCircle : RenderBase
     {
-        public RenderReflectedCircle(Settings s, Panel c, string n) : base(s, c, n) { }
+        public RenderReflectedCircle(Settings s, string n) : base(s, n) { }
 
         public override void Render(Graphics g, float[] samples)
         {
             float[] heights = FFT.SampleToFreq(samples, Settings.SampleCount);
             GetLastIndex(heights);
 
-            float minX = DrawingPanel.Width;
+            float minX =  g.VisibleClipBounds.Width;
             float maxX = 0;
 
             List<PointF> points = new List<PointF>();
@@ -27,8 +27,8 @@ namespace AudioVisualizer
 
                 float height = Smooth(heights, i, Settings.Smoothing);
 
-                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) + DrawingPanel.Width / 2;
-                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) + DrawingPanel.Height / 2;
+                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Width / 2;
+                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Height / 2;
                 points.Add(new PointF((float)x, (float)y));
 
                 minX = (float)Math.Min(minX, x);
@@ -41,8 +41,8 @@ namespace AudioVisualizer
 
                 float height = Smooth(heights, i, Settings.Smoothing);
 
-                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) + DrawingPanel.Width / 2;
-                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) + DrawingPanel.Height / 2;
+                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Width / 2;
+                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Height / 2;
                 points.Add(new PointF((float)x, (float)y));
 
                 minX = (float)Math.Min(minX, x);

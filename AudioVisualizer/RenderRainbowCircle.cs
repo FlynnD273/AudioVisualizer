@@ -13,7 +13,7 @@ namespace AudioVisualizer
 {
     class RenderRainbowCircle : RenderBase
     {
-        public RenderRainbowCircle(Settings s, Panel c, string n) : base(s, c, n) { }
+        public RenderRainbowCircle(Settings s, string n) : base(s, n) { }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -26,7 +26,7 @@ namespace AudioVisualizer
 
         private void DrawOutline(Graphics g, float[] heights, float scale)
         {
-            List<PointF> outerEdge = GetCircularPoints(heights, scale);
+            List<PointF> outerEdge = GetCircularPoints(heights, scale, g);
 
             PathGradientBrush b = new PathGradientBrush(outerEdge.ToArray());
 
@@ -43,7 +43,7 @@ namespace AudioVisualizer
 
         private void DrawCircle(Graphics g, float[] heights)
         {
-            List<PointF> points = GetCircularPoints(heights, 1);
+            List<PointF> points = GetCircularPoints(heights, 1, g);
 
             PathGradientBrush b = new PathGradientBrush(points.ToArray());
 

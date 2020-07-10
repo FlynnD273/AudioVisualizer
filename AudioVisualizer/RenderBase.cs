@@ -14,16 +14,12 @@ namespace AudioVisualizer
         protected float maxHeight { get; set; }
         protected int lastIndex { get; set; }
 
-        private Settings _settings;
-        public Settings Settings { get => _settings; set => _settings = value; }
-        private Panel _drawingPanel;
-        public Panel DrawingPanel { get => _drawingPanel; set => _drawingPanel = value; }
+        public Settings Settings { get; set; }
         public string Name { get; private set; }
 
-        public RenderBase (Settings s, Panel c, string n)
+        public RenderBase (Settings s, string n)
         {
             Settings = s;
-            DrawingPanel = c;
             Name = n;
         }
 
@@ -33,7 +29,7 @@ namespace AudioVisualizer
             return lastIndex = (int)Math.Min((heights.Length / Settings.XScale), heights.Length);
         }
 
-        protected List<PointF> GetCircularPoints(float[] heights, float scale, float radius = 100)
+        protected List<PointF> GetCircularPoints(float[] heights, float scale, Graphics g, float radius = 100)
         {
             List<PointF> points = new List<PointF>();
             maxAngle = 0;
@@ -45,8 +41,8 @@ namespace AudioVisualizer
 
                 float height = SmoothCircular(heights, i, Settings.Smoothing, lastIndex) * scale * Settings.YScale;
 
-                double x = Math.Cos(angle - Math.PI / 2) * (height + radius) + DrawingPanel.Width / 2;
-                double y = Math.Sin(angle - Math.PI / 2) * (height + radius) + DrawingPanel.Height / 2;
+                double x = Math.Cos(angle - Math.PI / 2) * (height + radius) +  g.VisibleClipBounds.Width / 2;
+                double y = Math.Sin(angle - Math.PI / 2) * (height + radius) +  g.VisibleClipBounds.Height / 2;
 
                 points.Add(new PointF((float)x, (float)y));
 
