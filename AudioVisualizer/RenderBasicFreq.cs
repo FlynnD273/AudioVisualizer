@@ -10,7 +10,12 @@ namespace AudioVisualizer
 {
     class RenderBasicFreq : RenderBase
     {
-        public RenderBasicFreq(Settings s, string n) : base(s, n) { }
+        public RenderBasicFreq(Settings s, string n) : base(s, n) 
+        {
+            Settings.Colors.Add(new NamedColor("Left", Color.BlueViolet));
+            Settings.Colors.Add(new NamedColor("Right", Color.OrangeRed));
+            Settings.Colors.Add(new NamedColor("Top", Color.ForestGreen));
+        }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -33,11 +38,11 @@ namespace AudioVisualizer
 
             points.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height));
 
-            LinearGradientBrush b = new LinearGradientBrush(new PointF(0, 0), new PointF( g.VisibleClipBounds.Width, 0), Color.BlueViolet, Color.OrangeRed);
+            LinearGradientBrush b = new LinearGradientBrush(new PointF(0, 0), new PointF( g.VisibleClipBounds.Width, 0), Settings.GetColor("Left"), Settings.GetColor("Right"));
 
             g.FillPolygon(b, points.ToArray());
 
-            b = new LinearGradientBrush(new PointF(0, 0), new PointF(0,  g.VisibleClipBounds.Height), Color.ForestGreen, Color.FromArgb(0, Color.ForestGreen));
+            b = new LinearGradientBrush(new PointF(0, 0), new PointF(0,  g.VisibleClipBounds.Height), Settings.GetColor("Top"), Color.FromArgb(0, Settings.GetColor("Top")));
 
             g.FillPolygon(b, points.ToArray());
         }

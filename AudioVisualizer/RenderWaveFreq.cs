@@ -9,7 +9,10 @@ namespace AudioVisualizer
 {
     class RenderWaveFreq : RenderBase
     {
-        public RenderWaveFreq(Settings s, string n) : base(s, n) { }
+        public RenderWaveFreq(Settings s, string n) : base(s, n) 
+        {
+            Settings.Colors.Add(new NamedColor("Color", Color.White));
+        }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -30,7 +33,7 @@ namespace AudioVisualizer
 
             points.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height / 2));
 
-            Pen p = new Pen(Color.White, 2.0f);
+            Pen p = new Pen(Settings.GetColor("Color"), 2.0f);
 
             g.DrawLines(p, points.ToArray());
         }

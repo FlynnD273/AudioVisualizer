@@ -86,7 +86,7 @@ namespace AudioVisualizer
                 total += (float)k[i];
             }
 
-            result /= step / 2;
+            result /= step / 4;
 
             return result;
         }
@@ -108,7 +108,7 @@ namespace AudioVisualizer
                 total += (float)k[i];
             }
 
-            result /= step / 2;
+            result /= step / 4;
 
             return result;
         }

@@ -9,7 +9,11 @@ namespace AudioVisualizer
 {
     class RenderReflectedCircle : RenderBase
     {
-        public RenderReflectedCircle(Settings s, string n) : base(s, n) { }
+        public RenderReflectedCircle(Settings s, string n) : base(s, n) 
+        {
+            Settings.Colors.Add(new NamedColor("Left", Color.BlueViolet));
+            Settings.Colors.Add(new NamedColor("Right", Color.OrangeRed));
+        }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -49,7 +53,7 @@ namespace AudioVisualizer
                 maxX = (float)Math.Max(maxX, x);
             }
 
-            LinearGradientBrush b = new LinearGradientBrush(new PointF(minX, 0), new PointF(maxX, 0), Color.BlueViolet, Color.OrangeRed);
+            LinearGradientBrush b = new LinearGradientBrush(new PointF(minX, 0), new PointF(maxX, 0), Settings.GetColor("Left"), Settings.GetColor("Right"));
             g.FillPolygon(b, points.ToArray());
         }
     }

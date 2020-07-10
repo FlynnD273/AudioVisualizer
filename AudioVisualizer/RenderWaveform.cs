@@ -8,7 +8,10 @@ namespace AudioVisualizer
 {
     class RenderWaveform : RenderBase
     {
-        public RenderWaveform(Settings s, string n) : base(s, n) { }
+        public RenderWaveform(Settings s, string n) : base(s, n) 
+        {
+            Settings.Colors.Add(new NamedColor("Color", Color.White));
+        }
 
         public override void Render(Graphics g, float[] heights)
         {
@@ -26,7 +29,7 @@ namespace AudioVisualizer
                 }
             }
 
-            Pen p = new Pen(Color.White, 2.0f);
+            Pen p = new Pen(Settings.GetColor("Color"), 2.0f);
 
             g.DrawLines(p, points.ToArray());
         }

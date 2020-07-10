@@ -37,6 +37,8 @@ namespace AudioVisualizer
         public Settings Settings { get; private set; }
         public bool ProgramShuttingDown { get; set; }
 
+        private int[] customColors;
+
         public SettingsForm()
         {
             InitializeComponent();
@@ -65,10 +67,6 @@ namespace AudioVisualizer
             samplePowNumberBox.KeyDown += NumericUpDown_KeyDown;
             smoothingNumberBox.KeyDown += NumericUpDown_KeyDown;
 
-            //xScaleNumberBox.ValueChanged += RaiseSettingsChanged;
-            //yScaleNumberBox.ValueChanged += RaiseSettingsChanged;
-            //samplePowNumberBox.ValueChanged += RaiseSettingsChanged;
-            //smoothingNumberBox.ValueChanged += RaiseSettingsChanged;
             renderModeComboBox.SelectedIndexChanged += RaiseSettingsChanged;
 
             renderModeComboBox.DataSource = renderOptions;
@@ -110,7 +108,7 @@ namespace AudioVisualizer
             renderOptions.Add(new RenderReflectedFreq(settingsOptions[renderOptions.Count], "Reflections"));
             renderOptions.Add(new RenderWaveFreq(settingsOptions[renderOptions.Count], "Frequency Wave"));
             renderOptions.Add(new RenderOutlineCircle(settingsOptions[renderOptions.Count], "Circle Outline"));
-            renderOptions.Add(new RenderBasicCircle(settingsOptions[renderOptions.Count], "Shadow"));
+            renderOptions.Add(new RenderShadowCircle(settingsOptions[renderOptions.Count], "Shadow"));
             renderOptions.Add(new RenderRainbowCircle(settingsOptions[renderOptions.Count], "Color Wheel"));
             renderOptions.Add(new RenderReflectedCircle(settingsOptions[renderOptions.Count], "Mirrored Circle"));
 
@@ -130,6 +128,8 @@ namespace AudioVisualizer
             samplePowNumberBox.DataBindings.Add("Value", Settings, "SamplePow", false, DataSourceUpdateMode.OnPropertyChanged);
             smoothingNumberBox.DataBindings.Clear();
             smoothingNumberBox.DataBindings.Add("Value", Settings, "Smoothing", false, DataSourceUpdateMode.OnPropertyChanged);
+            colorNamesListBox.DataSource = Settings.Colors;
+            colorsListBox.DataSource = Settings.Colors;
         }
 
         private void InitAudio(bool isMicrophone)
@@ -235,6 +235,40 @@ namespace AudioVisualizer
             {
                 e.SuppressKeyPress = true;
             }
+        }
+
+        private void colorNamesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ColorDialog col = new ColorDialog();
+            col.AnyColor = false;
+            col.FullOpen = true;
+            if (customColors != null) { col.CustomColors = customColors; }
+            col.Color = Settings.Colors[colorNamesListBox.SelectedIndex].Color;
+
+            if (col.ShowDialog() == DialogResult.OK)
+            {
+                Settings.Colors[colorNamesListBox.SelectedIndex].Color = col.Color;
+                customColors = col.CustomColors;
+            }
+        }
+
+        private void ColorsListBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            //
+            // Draw the background of the ListBox control for each item.
+            // Create a new Brush and initialize to a Black colored brush
+            // by default.
+            //
+            e.DrawBackground();
+            if (e.Index > -1)
+            {
+                e.Graphics.FillRectangle(new SolidBrush(((NamedColor)((ListBox)sender).Items[e.Index]).Color), e.Bounds);
+            }
+            //
+            // If the ListBox has focus, draw a focus rectangle 
+            // around the selected item.
+            //
+            e.DrawFocusRectangle();
         }
     }
 }

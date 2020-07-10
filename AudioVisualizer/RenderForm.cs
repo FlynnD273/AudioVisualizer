@@ -29,22 +29,12 @@ namespace AudioVisualizer
 
         private SettingsForm settingsForm;
 
-        private readonly RenderFormState _state = new RenderFormState();
 
         private bool isResizing = false;
-
-        private Region mouseRegion;
 
         public RenderForm()
         {
             InitializeComponent();
-
-            mouseRegion = new Region(new Rectangle(0, 0, 500, 500));
-
-            Bitmap scaledIcon = new Bitmap(Properties.Resources.settings, new Size((int)(settingsButton.Width * 0.8), (int)(settingsButton.Height * 0.8)));
-            settingsButton.Image = scaledIcon;
-            settingsPanel.BackColor = Color.Black;
-            settingsPanel.Visible = false;
 
             DoubleBuffered = true;
 
@@ -78,12 +68,6 @@ namespace AudioVisualizer
             }
         }
 
-        private void settingsButton_Click(object sender, EventArgs e)
-        {
-            settingsForm.Show();
-            settingsForm.Activate();
-        }
-
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             settingsForm.ProgramShuttingDown = true;
@@ -110,17 +94,10 @@ namespace AudioVisualizer
                 isResizing = false;
             }
         }
-
-        private void RenderForm_MouseMove(object sender, MouseEventArgs e)
+        private void RenderForm_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (settingsPanel.ClientRectangle.Contains(PointToClient(Cursor.Position)))
-            {
-                settingsButton.Visible = true;
-            }
-            else
-            {
-                settingsButton.Visible = false;
-            }
+            settingsForm.Show();
+            settingsForm.Activate();
         }
     }
 }

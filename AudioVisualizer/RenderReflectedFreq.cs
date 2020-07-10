@@ -9,7 +9,13 @@ namespace AudioVisualizer
 {
     class RenderReflectedFreq : RenderBase
     {
-        public RenderReflectedFreq(Settings s, string n) : base(s, n) { }
+        public RenderReflectedFreq(Settings s, string n) : base(s, n) 
+        {
+            Settings.Colors.Add(new NamedColor("Left", Color.BlueViolet));
+            Settings.Colors.Add(new NamedColor("Right", Color.OrangeRed));
+            Settings.Colors.Add(new NamedColor("Top", Color.White));
+            Settings.Colors.Add(new NamedColor("Bottom", Color.Black));
+        }
 
         public override void Render(Graphics g, float[] samples)
         {
@@ -38,23 +44,25 @@ namespace AudioVisualizer
             points.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height / 2));
             pointsReflected.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height / 2));
 
+            LinearGradientBrush b = new LinearGradientBrush(new PointF(0, 0), new PointF(g.VisibleClipBounds.Width, 0), Settings.GetColor("Left"), Settings.GetColor("Right"));
+
+            List<PointF> totalShape = new List<PointF>();
+            totalShape.AddRange(points);
+            totalShape.AddRange(pointsReflected);
+
+            g.FillPolygon(b, totalShape.ToArray());
+
             //Draw top
 
-            LinearGradientBrush b = new LinearGradientBrush(new PointF(0, 0), new PointF(g.VisibleClipBounds.Width, 0), Color.BlueViolet, Color.OrangeRed);
-
-            g.FillPolygon(b, points.ToArray());
-
-            b = new LinearGradientBrush(new PointF(0, 0), new PointF(0, g.VisibleClipBounds.Height / 2), Color.White, Color.FromArgb(0, Color.White));
+            b = new LinearGradientBrush(new PointF(0, 0), new PointF(0, g.VisibleClipBounds.Height / 2 + 5), Settings.GetColor("Top"), Color.FromArgb(0, Settings.GetColor("Top")));
+            b.WrapMode = WrapMode.TileFlipY;
 
             g.FillPolygon(b, points.ToArray());
 
             //Draw bottom
 
-            b = new LinearGradientBrush(new PointF(0, 0), new PointF(g.VisibleClipBounds.Width, 0), Color.BlueViolet, Color.OrangeRed);
-
-            g.FillPolygon(b, pointsReflected.ToArray());
-
-            b = new LinearGradientBrush(new PointF(0, g.VisibleClipBounds.Height / 2 - 1), new PointF(0,  g.VisibleClipBounds.Height), Color.FromArgb(0, Color.Black), Color.Black);
+            b = new LinearGradientBrush(new PointF(0, g.VisibleClipBounds.Height / 2 - 1), new PointF(0,  g.VisibleClipBounds.Height), Color.FromArgb(0, Settings.GetColor("Bottom")), Settings.GetColor("Bottom"));
+            b.WrapMode = WrapMode.TileFlipY;
 
             g.FillPolygon(b, pointsReflected.ToArray());
         }

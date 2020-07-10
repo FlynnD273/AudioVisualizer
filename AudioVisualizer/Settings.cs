@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -48,9 +49,9 @@ namespace AudioVisualizer
 
         public int SampleCount { get; private set; }
 
-        private List<ColorSetting> _colors;
+        private BindingList<NamedColor> _colors;
 
-        public List<ColorSetting> Colors
+        public BindingList<NamedColor> Colors
         {
             get => _colors;
             set => UpdateField(ref _colors, value);
@@ -62,7 +63,17 @@ namespace AudioVisualizer
             YScale = y;
             SamplePow = samplePow;
             Smoothing = smoothing;
-            Colors = new List<ColorSetting>();
+            Colors = new BindingList<NamedColor>();
+        }
+
+        public NamedColor GetNamedColor(string name)
+        {
+            return Colors.First(c => c.Name == name);
+        }
+        
+        public Color GetColor(string name)
+        {
+            return GetNamedColor(name).Color;
         }
     }
 }

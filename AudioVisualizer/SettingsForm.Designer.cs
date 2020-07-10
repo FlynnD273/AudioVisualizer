@@ -40,6 +40,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.samplePowLabel = new System.Windows.Forms.Label();
             this.smoothingLabel = new System.Windows.Forms.Label();
+            this.colorNamesListBox = new System.Windows.Forms.ListBox();
+            this.colorsListBox = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).BeginInit();
@@ -143,9 +145,9 @@
             this.samplePowLabel.AutoSize = true;
             this.samplePowLabel.Location = new System.Drawing.Point(202, 55);
             this.samplePowLabel.Name = "samplePowLabel";
-            this.samplePowLabel.Size = new System.Drawing.Size(150, 25);
+            this.samplePowLabel.Size = new System.Drawing.Size(186, 25);
             this.samplePowLabel.TabIndex = 9;
-            this.samplePowLabel.Text = "Sample Size (Exp)";
+            this.samplePowLabel.Text = "Sample Size Exponent";
             // 
             // smoothingLabel
             // 
@@ -156,11 +158,37 @@
             this.smoothingLabel.TabIndex = 10;
             this.smoothingLabel.Text = "Smoothing";
             // 
-            // OptionsForm
+            // colorNamesListBox
+            // 
+            this.colorNamesListBox.FormattingEnabled = true;
+            this.colorNamesListBox.ItemHeight = 25;
+            this.colorNamesListBox.Location = new System.Drawing.Point(393, 58);
+            this.colorNamesListBox.Name = "colorNamesListBox";
+            this.colorNamesListBox.Size = new System.Drawing.Size(180, 179);
+            this.colorNamesListBox.TabIndex = 11;
+            this.colorNamesListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.colorNamesListBox_MouseDoubleClick);
+            // 
+            // colorsListBox
+            // 
+            this.colorsListBox.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.colorsListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.colorsListBox.FormattingEnabled = true;
+            this.colorsListBox.ItemHeight = 25;
+            this.colorsListBox.Location = new System.Drawing.Point(579, 58);
+            this.colorsListBox.Name = "colorsListBox";
+            this.colorsListBox.Size = new System.Drawing.Size(30, 179);
+            this.colorsListBox.TabIndex = 12;
+            this.colorsListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ColorsListBox_DrawItem);
+            this.colorsListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.colorNamesListBox_MouseDoubleClick);
+            // 
+            // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(585, 190);
+            this.BackColor = System.Drawing.SystemColors.Menu;
+            this.ClientSize = new System.Drawing.Size(621, 251);
+            this.Controls.Add(this.colorsListBox);
+            this.Controls.Add(this.colorNamesListBox);
             this.Controls.Add(this.smoothingLabel);
             this.Controls.Add(this.samplePowLabel);
             this.Controls.Add(this.label2);
@@ -174,7 +202,7 @@
             this.Controls.Add(this.Stop);
             this.Controls.Add(this.Start);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Name = "OptionsForm";
+            this.Name = "SettingsForm";
             this.Text = "Options";
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).EndInit();
@@ -199,5 +227,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label samplePowLabel;
         private System.Windows.Forms.Label smoothingLabel;
+        private System.Windows.Forms.ListBox colorNamesListBox;
+        private System.Windows.Forms.ListBox colorsListBox;
     }
 }

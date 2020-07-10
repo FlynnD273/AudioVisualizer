@@ -12,7 +12,7 @@ namespace AudioVisualizer
 
         protected void UpdateField<T>(ref T field, T newValue,
             Action<T> onChanged = null,
-            [CallerMemberName] String propertyName = null)
+            [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, newValue))
             {

@@ -5,15 +5,20 @@ using System.Text;
 
 namespace AudioVisualizer
 {
-    public class ColorSetting
+    class NamedColor
     {
-        public Color StoredColor { get; set; }
         public string Name { get; set; }
+        public Color Color { get; set; }
 
-        public ColorSetting (Color c, string n)
+        public NamedColor(string n, Color c)
         {
-            StoredColor = c;
             Name = n;
+            Color = c;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
