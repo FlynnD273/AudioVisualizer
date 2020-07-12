@@ -47,6 +47,7 @@
             this.playButton = new System.Windows.Forms.Button();
             this.fileNameLabel = new System.Windows.Forms.Label();
             this.loadFileButton = new System.Windows.Forms.Button();
+            this.songProgressBar = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).BeginInit();
@@ -201,6 +202,7 @@
             // 
             // audioPlaybackPanel
             // 
+            this.audioPlaybackPanel.Controls.Add(this.songProgressBar);
             this.audioPlaybackPanel.Controls.Add(this.playButton);
             this.audioPlaybackPanel.Location = new System.Drawing.Point(1, 40);
             this.audioPlaybackPanel.Name = "audioPlaybackPanel";
@@ -234,6 +236,15 @@
             this.loadFileButton.Text = "Open File";
             this.loadFileButton.UseVisualStyleBackColor = true;
             this.loadFileButton.Click += new System.EventHandler(this.loadFileButton_Click);
+            // 
+            // songProgressBar
+            // 
+            this.songProgressBar.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.songProgressBar.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.songProgressBar.Location = new System.Drawing.Point(41, 1);
+            this.songProgressBar.Name = "songProgressBar";
+            this.songProgressBar.Size = new System.Drawing.Size(328, 34);
+            this.songProgressBar.TabIndex = 4;
             // 
             // SettingsForm
             // 
@@ -293,5 +304,6 @@
         private System.Windows.Forms.Button lo;
         private System.Windows.Forms.Panel audioPlaybackPanel;
         private System.Windows.Forms.Button playButton;
+        private System.Windows.Forms.ProgressBar songProgressBar;
     }
 }

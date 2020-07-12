@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 using AudioVisualizer.Properties;
 using MathNet.Numerics;
@@ -42,13 +43,10 @@ namespace AudioVisualizer
 
         private WaveFileReader reader;
         private WaveOut output;
-        private string audioFilePath;
-        private string songName;
 
-        private float[] fileData;
+        private System.Timers.Timer progressTimer;
 
-        private int[] customColors;
-
+        private SongInfo songInfo;
         public SettingsForm()
         {
             InitializeComponent();
@@ -110,14 +108,14 @@ namespace AudioVisualizer
         private void InitOptions()
         {
             settingsOptions = new List<Settings>();
-            settingsOptions.Add(new Settings(1.0f, 100f, 13, 1));
-            settingsOptions.Add(new Settings(5.0f, 150f, 13, 1));
-            settingsOptions.Add(new Settings(5.0f, 100f, 13, 1));
-            settingsOptions.Add(new Settings(5.0f, 100f, 13, 1));
-            settingsOptions.Add(new Settings(8.0f, 70f, 13, 10));
-            settingsOptions.Add(new Settings(8.0f, 70f, 13, 10));
-            settingsOptions.Add(new Settings(8.0f, 70f, 13, 10));
-            settingsOptions.Add(new Settings(4.0f, 40f, 13, 10));
+            settingsOptions.Add(new Settings(1.0f, 200f, 13, 1)); //Waveform
+            settingsOptions.Add(new Settings(5.0f, 300f, 13, 1)); //Frequency
+            settingsOptions.Add(new Settings(5.0f, 200f, 13, 1)); //Reflections
+            settingsOptions.Add(new Settings(5.0f, 300f, 13, 20)); //Frequency Wave
+            settingsOptions.Add(new Settings(8.0f, 200f, 13, 10)); //Circle Outline
+            settingsOptions.Add(new Settings(8.0f, 200f, 13, 10)); //Shadow
+            settingsOptions.Add(new Settings(8.0f, 200f, 13, 10)); //Color Wheel
+            settingsOptions.Add(new Settings(4.0f, 100f, 13, 10)); //Mirrored Circle
 
             renderOptions = new List<RenderBase>();
             renderOptions.Add(new RenderWaveform(settingsOptions[renderOptions.Count], "Waveform"));
@@ -183,10 +181,10 @@ namespace AudioVisualizer
         private void AddDataFromFile(object s, WaveInEventArgs a)
         {
             Samples.Clear();
-            int startIndex = (int)(reader.CurrentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds * reader.SampleCount);
-            for (int i = Math.Max(startIndex - Settings.SampleCount / 2, 0); i < Math.Min(reader.SampleCount, startIndex + Settings.SampleCount / 2); i++)
+            int index = (int)(reader.CurrentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds * reader.SampleCount);
+            for (int i = Math.Max(index - Settings.SampleCount / 2, 0); i < Math.Min(reader.SampleCount, index + Settings.SampleCount / 2); i++)
             {
-                Samples.Add(fileData[i]);
+                Samples.Add(songInfo.Samples[i]);
             }
 
             UpdateGraphics?.Invoke(this, EventArgs.Empty);
@@ -340,11 +338,6 @@ namespace AudioVisualizer
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                audioFilePath = dialog.FileName;
-            }
-
-            if (File.Exists(audioFilePath))
-            {
                 StopReading();
                 output?.Dispose();
                 reader?.Dispose();
@@ -353,69 +346,43 @@ namespace AudioVisualizer
                 reader = null;
                 input = null;
 
+                songInfo = new SongInfo(dialog.FileName);
+            }
+
+            if (File.Exists(songInfo.FilePath))
+            {
+                fileNameLabel.Text = songInfo.SongName;
+
                 audioPlaybackPanel.Enabled = true;
 
-                songName = Path.GetFileName(audioFilePath);
-
-                if (Path.GetExtension(audioFilePath) == ".mp3")
-                {
-                    Mp3ToWav(audioFilePath, "Temp.wav");
-                    audioFilePath = "Temp.wav";
-                }
-
-                reader = new WaveFileReader(audioFilePath);
-                ReadSong();
+                reader = new WaveFileReader(songInfo.FilePath);
 
                 output = new WaveOut();
-                output.NumberOfBuffers = 4;
+                output.NumberOfBuffers = 8;
+                output.PlaybackStopped += Output_PlaybackStopped;
                 output.Init(reader);
-
-                fileNameLabel.Text = songName;
 
                 playButton.Image = Resources.Play;
             }
         }
-        public static void Mp3ToWav(string mp3File, string outputFile)
-        {
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
-            }
 
-            using (Mp3FileReader mp3Reader = new Mp3FileReader(mp3File))
-            {
-                using (WaveStream pcmStream = WaveFormatConversionStream.CreatePcmStream(mp3Reader))
-                {
-                    WaveFileWriter.CreateWaveFile(outputFile, pcmStream);
-                }
-            }
+        private void Output_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            playButton.Image = Resources.Play;
+
+            StopProgressTimer();
+            songProgressBar.Value = 0;
+            reader.Position = 0;
         }
 
-        private void ReadSong()
+        private void UpdateProgressBar(object obj)
         {
-            fileData = new float[reader.SampleCount];
-            reader.Position = 0;
-
-            for (int i = 0; i < fileData.Length; i++)
+            Thread.Sleep(500);
+            while (output.PlaybackState == PlaybackState.Playing)
             {
-                var frame = reader.ReadNextSampleFrame();
-
-                float temp = 0;
-
-                if ( frame != null && frame.Length > 0)
-                {
-                    for (int j = 0; j < frame.Length; j++)
-                    {
-                        temp += (float)frame[j];
-                    }
-
-                    temp /= (float)frame.Length;
-                }
-
-                fileData[i] = temp;
+                songProgressBar.Value = (int)((float)reader.CurrentTime.TotalSeconds / reader.TotalTime.TotalSeconds * 100);
+                Thread.Sleep(500);
             }
-
-            reader.Position = 0;
         }
 
         private void playButton_Click(object sender, EventArgs e)
@@ -423,13 +390,42 @@ namespace AudioVisualizer
             if (output.PlaybackState == PlaybackState.Paused || output.PlaybackState == PlaybackState.Stopped)
             {
                 output.Play();
+
+                if (Start.Enabled)
+                    StartReading();
                 playButton.Image = Resources.Pause;
+
+                StartProgressBar();
             }
             else
             {
                 output.Pause();
                 playButton.Image = Resources.Play;
+
+                StopProgressTimer();
             }
+        }
+
+        private void StartProgressBar()
+        {
+            progressTimer = new System.Timers.Timer();
+
+            songProgressBar.Maximum = (int)reader.TotalTime.TotalSeconds;
+            songProgressBar.Value = (int)reader.CurrentTime.TotalSeconds;
+            progressTimer.Interval = 1000;
+            progressTimer.Elapsed += IncreaseProgressBar;
+            progressTimer.Start();
+        }
+        private void IncreaseProgressBar(object sender, EventArgs e)
+        {
+            songProgressBar.BeginInvoke(new Action(() => songProgressBar.Increment(1)));
+            if (songProgressBar.Value == songProgressBar.Maximum)
+                StopProgressTimer();
+        }
+
+        private void StopProgressTimer()
+        {
+            progressTimer.Stop();
         }
     }
 }
