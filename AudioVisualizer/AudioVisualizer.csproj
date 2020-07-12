@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Pause.png" />
+    <None Remove="Resources\Play.png" />
     <None Remove="Resources\settings.png" />
   </ItemGroup>
 
@@ -17,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Play.png" />
     <Resource Include="Resources\settings.png" />
   </ItemGroup>
 

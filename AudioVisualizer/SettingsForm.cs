@@ -6,17 +6,20 @@ using System.ComponentModel.Design;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AudioVisualizer.Properties;
 using MathNet.Numerics;
 using NAudio;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using static AudioVisualizer.NamedInputState;
 
 namespace AudioVisualizer
 {
@@ -36,6 +39,13 @@ namespace AudioVisualizer
         private RenderBase Render;
         public Settings Settings { get; private set; }
         public bool ProgramShuttingDown { get; set; }
+
+        private WaveFileReader reader;
+        private WaveOut output;
+        private string audioFilePath;
+        private string songName;
+
+        private float[] fileData;
 
         private int[] customColors;
 
@@ -73,6 +83,9 @@ namespace AudioVisualizer
             renderModeComboBox.DisplayMember = "Name";
             renderModeComboBox.SelectedIndex = 0;
 
+            inputModeComboBox.DataSource = NamedInputState.FromInputStateEnum();
+            inputModeComboBox.DisplayMember = "Name";
+            inputModeComboBox.ValueMember = "State";
             inputModeComboBox.SelectedIndex = 0;
 
             xScaleNumberBox.Minimum = 1M;
@@ -81,6 +94,10 @@ namespace AudioVisualizer
             samplePowNumberBox.Maximum = 16;
             smoothingNumberBox.Minimum = 1;
             smoothingNumberBox.Maximum = 10000;
+
+            playButton.Image = Resources.Play;
+            audioPlaybackPanel.Enabled = false;
+            filePanel.Enabled = false;
 
             UpdateSettings();
         }
@@ -132,27 +149,56 @@ namespace AudioVisualizer
             colorsListBox.DataSource = Settings.Colors;
         }
 
-        private void InitAudio(bool isMicrophone)
+        private void InitAudio(InputState state)
         {
-            if (isMicrophone)
+            filePanel.Enabled = false;
+
+            switch (state)
             {
-                input = new WaveIn();
-                input.WaveFormat = new WaveFormat(44100, 32, 2);
+                case InputState.SpeakerOut:
+                    input = new WasapiLoopbackCapture();
+
+                    InitReader();
+                    break;
+                case InputState.MicrophoneIn:
+                    input = new WaveIn();
+                    input.WaveFormat = new WaveFormat(44100, 32, 2);
+
+                    InitReader();
+                    break;
+                case InputState.FileIn:
+                    input = new WasapiLoopbackCapture();
+
+                    waveProvider = new BufferedWaveProvider(input.WaveFormat);
+
+                    provider = waveProvider.ToSampleProvider();
+                    input.DataAvailable += AddDataFromFile;
+                    input.RecordingStopped += (s, a) => { input?.Dispose(); };
+                    break;
+                default:
+                    break;
             }
-            else
+        }
+
+        private void AddDataFromFile(object s, WaveInEventArgs a)
+        {
+            Samples.Clear();
+            int startIndex = (int)(reader.CurrentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds * reader.SampleCount);
+            for (int i = Math.Max(startIndex - Settings.SampleCount / 2, 0); i < Math.Min(reader.SampleCount, startIndex + Settings.SampleCount / 2); i++)
             {
-                input = new WasapiLoopbackCapture();
+                Samples.Add(fileData[i]);
             }
 
+            UpdateGraphics?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void InitReader ()
+        {
             waveProvider = new BufferedWaveProvider(input.WaveFormat);
 
-            //waveProvider.DiscardOnBufferOverflow = true;
             provider = waveProvider.ToSampleProvider();
-
             input.DataAvailable += AddData;
-
-            // When the Capturer Stops
-            input.RecordingStopped += (s, a) => { input.Dispose(); };
+            input.RecordingStopped += (s, a) => { input?.Dispose(); };
         }
 
         private void AddData(object s, WaveInEventArgs a)
@@ -184,7 +230,7 @@ namespace AudioVisualizer
 
         private void StopReading()
         {
-            input.StopRecording();
+            input?.StopRecording();
 
             Start.Enabled = true;
             Stop.Enabled = false;
@@ -198,11 +244,16 @@ namespace AudioVisualizer
         private void StartReading()
         {
             RaiseSettingsChanged(this, EventArgs.Empty);
-            InitAudio(inputModeComboBox.SelectedIndex == 1);
-            input.StartRecording();
+            InitAudio(((NamedInputState)inputModeComboBox.SelectedItem).State);
+            input?.StartRecording();
 
             Start.Enabled = false;
             Stop.Enabled = true;
+
+            if (((NamedInputState)inputModeComboBox.SelectedItem).State == InputState.FileIn)
+            {
+                filePanel.Enabled = true;
+            }
         }
 
         private void Wave_Paint(object sender, PaintEventArgs e)
@@ -222,6 +273,17 @@ namespace AudioVisualizer
             {
                 StopReading();
             }
+
+            if (((NamedInputState)inputModeComboBox.SelectedItem).State == InputState.FileIn)
+            {
+                filePanel.Enabled = true;
+            }
+            else
+            {
+                filePanel.Enabled = false;
+                output?.Pause();
+                playButton.Image = Resources.Play;
+            }
         }
 
         private void renderModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -239,16 +301,12 @@ namespace AudioVisualizer
 
         private void colorNamesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            ColorDialog col = new ColorDialog();
-            col.AnyColor = false;
-            col.FullOpen = true;
-            if (customColors != null) { col.CustomColors = customColors; }
-            col.Color = Settings.Colors[colorNamesListBox.SelectedIndex].Color;
+            ColorPicker col = new ColorPicker(((NamedColor)colorNamesListBox.SelectedItem).Color);
 
             if (col.ShowDialog() == DialogResult.OK)
             {
                 Settings.Colors[colorNamesListBox.SelectedIndex].Color = col.Color;
-                customColors = col.CustomColors;
+                colorsListBox.Invalidate();
             }
         }
 
@@ -269,6 +327,109 @@ namespace AudioVisualizer
             // around the selected item.
             //
             e.DrawFocusRectangle();
+        }
+
+        private void loadFileButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Sound Files (*.mp3; *.wav)|*.mp3; *.wav|All Files (*.*)|*.*";
+            dialog.FilterIndex = 0;
+            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            dialog.CheckFileExists = true;
+            dialog.Multiselect = false;
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                audioFilePath = dialog.FileName;
+            }
+
+            if (File.Exists(audioFilePath))
+            {
+                StopReading();
+                output?.Dispose();
+                reader?.Dispose();
+                input?.Dispose();
+                output = null;
+                reader = null;
+                input = null;
+
+                audioPlaybackPanel.Enabled = true;
+
+                songName = Path.GetFileName(audioFilePath);
+
+                if (Path.GetExtension(audioFilePath) == ".mp3")
+                {
+                    Mp3ToWav(audioFilePath, "Temp.wav");
+                    audioFilePath = "Temp.wav";
+                }
+
+                reader = new WaveFileReader(audioFilePath);
+                ReadSong();
+
+                output = new WaveOut();
+                output.NumberOfBuffers = 4;
+                output.Init(reader);
+
+                fileNameLabel.Text = songName;
+
+                playButton.Image = Resources.Play;
+            }
+        }
+        public static void Mp3ToWav(string mp3File, string outputFile)
+        {
+            if (File.Exists(outputFile))
+            {
+                File.Delete(outputFile);
+            }
+
+            using (Mp3FileReader mp3Reader = new Mp3FileReader(mp3File))
+            {
+                using (WaveStream pcmStream = WaveFormatConversionStream.CreatePcmStream(mp3Reader))
+                {
+                    WaveFileWriter.CreateWaveFile(outputFile, pcmStream);
+                }
+            }
+        }
+
+        private void ReadSong()
+        {
+            fileData = new float[reader.SampleCount];
+            reader.Position = 0;
+
+            for (int i = 0; i < fileData.Length; i++)
+            {
+                var frame = reader.ReadNextSampleFrame();
+
+                float temp = 0;
+
+                if ( frame != null && frame.Length > 0)
+                {
+                    for (int j = 0; j < frame.Length; j++)
+                    {
+                        temp += (float)frame[j];
+                    }
+
+                    temp /= (float)frame.Length;
+                }
+
+                fileData[i] = temp;
+            }
+
+            reader.Position = 0;
+        }
+
+        private void playButton_Click(object sender, EventArgs e)
+        {
+            if (output.PlaybackState == PlaybackState.Paused || output.PlaybackState == PlaybackState.Stopped)
+            {
+                output.Play();
+                playButton.Image = Resources.Pause;
+            }
+            else
+            {
+                output.Pause();
+                playButton.Image = Resources.Play;
+            }
         }
     }
 }

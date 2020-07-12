@@ -26,13 +26,13 @@ namespace AudioVisualizer
             float[] data = new float[wav.Length];
             Array.Copy(wav, data, wav.Length);
 
-            double[] k = MathNet.Numerics.Window.Triangular(windowSize * 2).ToArray();
+            double[] k = MathNet.Numerics.Window.Blackman(windowSize).ToArray();
 
             for (int i = 0; i < windowSize; i++)
             {
                 if (i < windowedVals.Length && i < data.Length)
                 {
-                    windowedVals[i] = data[data.Length - i - 1] * (float)k[i + windowSize];
+                    windowedVals[i] = data[data.Length - i - 1] * (float)k[i];
                 }
                 else
                 {

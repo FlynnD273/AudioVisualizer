@@ -86,20 +86,20 @@ namespace AudioVisualizer
                 total += (float)k[i];
             }
 
-            result /= step / 4;
+            result /= total;
 
             return result;
         }
 
         protected float Smooth(float[] heights, int index, int step)
         {
-            int sampleCount = Math.Min(heights.Length - index, step);
+            int sampleCount = Math.Min(heights.Length - index - 1, step);
             if (sampleCount < 3)
             {
                 return heights[index];
             }
 
-            double[] k = Window.BartlettHann(sampleCount);
+            double[] k = Window.Cosine(sampleCount);
             float result = 0;
             float total = 0;
             for (int i = 0; i < sampleCount; i++)
@@ -108,7 +108,7 @@ namespace AudioVisualizer
                 total += (float)k[i];
             }
 
-            result /= step / 4;
+            result /= total;
 
             return result;
         }

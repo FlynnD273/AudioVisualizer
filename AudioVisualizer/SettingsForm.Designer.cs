@@ -42,10 +42,17 @@
             this.smoothingLabel = new System.Windows.Forms.Label();
             this.colorNamesListBox = new System.Windows.Forms.ListBox();
             this.colorsListBox = new System.Windows.Forms.ListBox();
+            this.filePanel = new System.Windows.Forms.Panel();
+            this.audioPlaybackPanel = new System.Windows.Forms.Panel();
+            this.playButton = new System.Windows.Forms.Button();
+            this.fileNameLabel = new System.Windows.Forms.Label();
+            this.loadFileButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.smoothingNumberBox)).BeginInit();
+            this.filePanel.SuspendLayout();
+            this.audioPlaybackPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // Start
@@ -75,7 +82,8 @@
             this.inputModeComboBox.FormattingEnabled = true;
             this.inputModeComboBox.Items.AddRange(new object[] {
             "Speaker Out",
-            "Microphone In"});
+            "Microphone In",
+            "From File"});
             this.inputModeComboBox.Location = new System.Drawing.Point(202, 17);
             this.inputModeComboBox.Name = "inputModeComboBox";
             this.inputModeComboBox.Size = new System.Drawing.Size(182, 33);
@@ -181,12 +189,59 @@
             this.colorsListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ColorsListBox_DrawItem);
             this.colorsListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.colorNamesListBox_MouseDoubleClick);
             // 
+            // filePanel
+            // 
+            this.filePanel.Controls.Add(this.audioPlaybackPanel);
+            this.filePanel.Controls.Add(this.fileNameLabel);
+            this.filePanel.Controls.Add(this.loadFileButton);
+            this.filePanel.Location = new System.Drawing.Point(12, 182);
+            this.filePanel.Name = "filePanel";
+            this.filePanel.Size = new System.Drawing.Size(376, 134);
+            this.filePanel.TabIndex = 13;
+            // 
+            // audioPlaybackPanel
+            // 
+            this.audioPlaybackPanel.Controls.Add(this.playButton);
+            this.audioPlaybackPanel.Location = new System.Drawing.Point(1, 40);
+            this.audioPlaybackPanel.Name = "audioPlaybackPanel";
+            this.audioPlaybackPanel.Size = new System.Drawing.Size(375, 94);
+            this.audioPlaybackPanel.TabIndex = 2;
+            // 
+            // playButton
+            // 
+            this.playButton.Location = new System.Drawing.Point(0, 0);
+            this.playButton.Name = "playButton";
+            this.playButton.Size = new System.Drawing.Size(35, 35);
+            this.playButton.TabIndex = 3;
+            this.playButton.UseVisualStyleBackColor = true;
+            this.playButton.Click += new System.EventHandler(this.playButton_Click);
+            // 
+            // fileNameLabel
+            // 
+            this.fileNameLabel.AutoSize = true;
+            this.fileNameLabel.Location = new System.Drawing.Point(118, 5);
+            this.fileNameLabel.Name = "fileNameLabel";
+            this.fileNameLabel.Size = new System.Drawing.Size(90, 25);
+            this.fileNameLabel.TabIndex = 1;
+            this.fileNameLabel.Text = "File Name";
+            // 
+            // loadFileButton
+            // 
+            this.loadFileButton.Location = new System.Drawing.Point(0, 0);
+            this.loadFileButton.Name = "loadFileButton";
+            this.loadFileButton.Size = new System.Drawing.Size(112, 34);
+            this.loadFileButton.TabIndex = 0;
+            this.loadFileButton.Text = "Open File";
+            this.loadFileButton.UseVisualStyleBackColor = true;
+            this.loadFileButton.Click += new System.EventHandler(this.loadFileButton_Click);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Menu;
-            this.ClientSize = new System.Drawing.Size(621, 251);
+            this.ClientSize = new System.Drawing.Size(621, 392);
+            this.Controls.Add(this.filePanel);
             this.Controls.Add(this.colorsListBox);
             this.Controls.Add(this.colorNamesListBox);
             this.Controls.Add(this.smoothingLabel);
@@ -208,6 +263,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.smoothingNumberBox)).EndInit();
+            this.filePanel.ResumeLayout(false);
+            this.filePanel.PerformLayout();
+            this.audioPlaybackPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -229,5 +287,11 @@
         private System.Windows.Forms.Label smoothingLabel;
         private System.Windows.Forms.ListBox colorNamesListBox;
         private System.Windows.Forms.ListBox colorsListBox;
+        private System.Windows.Forms.Panel filePanel;
+        private System.Windows.Forms.Label fileNameLabel;
+        private System.Windows.Forms.Button loadFileButton;
+        private System.Windows.Forms.Button lo;
+        private System.Windows.Forms.Panel audioPlaybackPanel;
+        private System.Windows.Forms.Button playButton;
     }
 }
