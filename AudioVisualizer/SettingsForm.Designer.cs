@@ -44,10 +44,10 @@
             this.colorsListBox = new System.Windows.Forms.ListBox();
             this.filePanel = new System.Windows.Forms.Panel();
             this.audioPlaybackPanel = new System.Windows.Forms.Panel();
+            this.songProgressBar = new System.Windows.Forms.ProgressBar();
             this.playButton = new System.Windows.Forms.Button();
             this.fileNameLabel = new System.Windows.Forms.Label();
             this.loadFileButton = new System.Windows.Forms.Button();
-            this.songProgressBar = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).BeginInit();
@@ -209,6 +209,15 @@
             this.audioPlaybackPanel.Size = new System.Drawing.Size(375, 94);
             this.audioPlaybackPanel.TabIndex = 2;
             // 
+            // songProgressBar
+            // 
+            this.songProgressBar.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.songProgressBar.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.songProgressBar.Location = new System.Drawing.Point(41, 1);
+            this.songProgressBar.Name = "songProgressBar";
+            this.songProgressBar.Size = new System.Drawing.Size(328, 34);
+            this.songProgressBar.TabIndex = 4;
+            // 
             // playButton
             // 
             this.playButton.Location = new System.Drawing.Point(0, 0);
@@ -236,15 +245,6 @@
             this.loadFileButton.Text = "Open File";
             this.loadFileButton.UseVisualStyleBackColor = true;
             this.loadFileButton.Click += new System.EventHandler(this.loadFileButton_Click);
-            // 
-            // songProgressBar
-            // 
-            this.songProgressBar.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.songProgressBar.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.songProgressBar.Location = new System.Drawing.Point(41, 1);
-            this.songProgressBar.Name = "songProgressBar";
-            this.songProgressBar.Size = new System.Drawing.Size(328, 34);
-            this.songProgressBar.TabIndex = 4;
             // 
             // SettingsForm
             // 

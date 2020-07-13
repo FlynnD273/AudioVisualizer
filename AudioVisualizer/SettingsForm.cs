@@ -181,7 +181,7 @@ namespace AudioVisualizer
         private void AddDataFromFile(object s, WaveInEventArgs a)
         {
             Samples.Clear();
-            int index = (int)(reader.CurrentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds * reader.SampleCount);
+            int index = (int)((reader.CurrentTime.TotalMilliseconds - output.DesiredLatency / 2) / reader.TotalTime.TotalMilliseconds * reader.SampleCount);
             for (int i = Math.Max(index - Settings.SampleCount / 2, 0); i < Math.Min(reader.SampleCount, index + Settings.SampleCount / 2); i++)
             {
                 Samples.Add(songInfo.Samples[i]);
@@ -347,6 +347,8 @@ namespace AudioVisualizer
                 input = null;
 
                 songInfo = new SongInfo(dialog.FileName);
+
+                songProgressBar.Value = 0;
             }
 
             if (File.Exists(songInfo.FilePath))
@@ -370,19 +372,8 @@ namespace AudioVisualizer
         {
             playButton.Image = Resources.Play;
 
-            StopProgressTimer();
             songProgressBar.Value = 0;
             reader.Position = 0;
-        }
-
-        private void UpdateProgressBar(object obj)
-        {
-            Thread.Sleep(500);
-            while (output.PlaybackState == PlaybackState.Playing)
-            {
-                songProgressBar.Value = (int)((float)reader.CurrentTime.TotalSeconds / reader.TotalTime.TotalSeconds * 100);
-                Thread.Sleep(500);
-            }
         }
 
         private void playButton_Click(object sender, EventArgs e)
@@ -401,8 +392,6 @@ namespace AudioVisualizer
             {
                 output.Pause();
                 playButton.Image = Resources.Play;
-
-                StopProgressTimer();
             }
         }
 
@@ -410,22 +399,15 @@ namespace AudioVisualizer
         {
             progressTimer = new System.Timers.Timer();
 
-            songProgressBar.Maximum = (int)reader.TotalTime.TotalSeconds;
+            songProgressBar.Maximum = 100;
             songProgressBar.Value = (int)reader.CurrentTime.TotalSeconds;
-            progressTimer.Interval = 1000;
-            progressTimer.Elapsed += IncreaseProgressBar;
+            progressTimer.Interval = 100;
+            progressTimer.Elapsed += UpdateProgressBar;
             progressTimer.Start();
         }
-        private void IncreaseProgressBar(object sender, EventArgs e)
+        private void UpdateProgressBar(object sender, EventArgs e)
         {
-            songProgressBar.BeginInvoke(new Action(() => songProgressBar.Increment(1)));
-            if (songProgressBar.Value == songProgressBar.Maximum)
-                StopProgressTimer();
-        }
-
-        private void StopProgressTimer()
-        {
-            progressTimer.Stop();
+            songProgressBar?.BeginInvoke(new Action(() => songProgressBar.Value = Math.Clamp((int)((float)reader.CurrentTime.TotalSeconds / reader.TotalTime.TotalSeconds * 100), songProgressBar.Minimum, songProgressBar.Maximum)));
         }
     }
 }
